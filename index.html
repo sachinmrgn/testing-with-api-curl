@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Contact Form</title>
+    <script src='//in.fw-cdn.com/31719983/876676.js' chat='true'></script>
+</head>
+<body>
+
+    <h2>Contact Form</h2>
+    <form id="crm-contact-form" name="crm_contact_form" method="POST">
+        <label for="first_name">First Name:</label><br>
+        <input type="text" id="first_name_input" name="first_name" required><br><br>
+
+        <label for="last_name">Last Name:</label><br>
+        <input type="text" id="last_name_input" name="last_name" required><br><br>
+
+        <label for="account_name">Account Name:</label><br>
+        <input type="text" id="account_name_input" name="account_name" required><br><br>
+
+        <label for="email">Email:</label><br>
+        <input type="email" id="email_input" name="email" required><br><br>
+
+        <label for="mobile">Mobile:</label><br>
+        <input type="tel" id="mobile_input" name="mobile" pattern="[0-9]{10}" required><br><br>
+
+        <input type="submit" id="submit_button" value="Submit" onclick="identify()">
+    </form>
+
+    <script>
+        function identify() {
+            // Prevent actual form submission
+            event.preventDefault();
+
+            var new_contact = {
+                "First name": document.getElementById("first_name_input").value,
+                "Last name": document.getElementById("last_name_input").value,
+                "Email": document.getElementById("email_input").value,
+                "Mobile": document.getElementById("mobile_input").value,
+                "company": {
+                    "Name": document.getElementById("account_name_input").value
+                }
+            };
+            var identifier = document.getElementById("email_input").value;
+            fwcrm.identify(identifier, new_contact);
+
+            // API call to send event data to Freshmarketer
+            var apiURL = 'https://sachina.freshmarketer.com/mas/api/v1/events?email=' + identifier + '&event_name=signup_from_social';
+            var eventData = {
+                "price": 1000,
+                "currency": "USD",
+                "product-name": "Amazon Fire Stick",
+                "user_id": "1010303"
+            };
+
+            fetch(apiURL, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(eventData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Form submitted and event tracked successfully!');
+                } else {
+                    alert('Form submission failed.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+
+</body>
+</html>
